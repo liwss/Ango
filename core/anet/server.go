@@ -9,16 +9,16 @@ import (
 
 //iServer接口实现，定义一个Server服务类
 type Server struct {
-	Name 		string						//服务器的名称
-	IPVersion 	string						//tcp4 or other
-	IP 			string						//服务绑定的IP地址
-	Port 		int							//服务绑定的端口
-	msgHandler 	inet.IMsgHandle				//当前Server的消息管理模块，用来绑定MsgId和对应的处理方法
-	ConnMgr 	inet.IConnManager			//当前Server的链接管理器
-	OnConnStart	func(conn inet.IConnection)	//该Server的连接创建时Hook函数
-	OnConnStop 	func(conn inet.IConnection)	//该Server的连接断开时的Hook函数
+	Name        string                      //服务器的名称
+	IPVersion   string                      //tcp4 or other
+	IP          string                      //服务绑定的IP地址
+	Port        int                         //服务绑定的端口
+	msgHandler  inet.IMsgHandle             //当前Server的消息管理模块，用来绑定MsgId和对应的处理方法
+	ConnMgr     inet.IConnManager           //当前Server的链接管理器
+	OnConnStart func(conn inet.IConnection) //该Server的连接创建时Hook函数
+	OnConnStop  func(conn inet.IConnection) //该Server的连接断开时的Hook函数
+	packet      inet.Packet
 }
-
 
 //开启网络服务
 func (s *Server) Start() {
@@ -37,7 +37,7 @@ func (s *Server) Start() {
 		}
 
 		//2 监听服务器地址
-		listener, err:= net.ListenTCP(s.IPVersion, addr)
+		listener, err := net.ListenTCP(s.IPVersion, addr)
 		if err != nil {
 			fmt.Println("listen", s.IPVersion, "err", err)
 			return
@@ -67,7 +67,7 @@ func (s *Server) Start() {
 
 			//3.3 处理该新连接请求的业务方法，此时应该有handler和conn是绑定的
 			dealConn := DealConnection(s, conn, cid, s.msgHandler)
-			cid ++
+			cid++
 
 			//3.4 启动当前链接的处理业务
 			go dealConn.Start()
@@ -76,7 +76,7 @@ func (s *Server) Start() {
 }
 
 func (s *Server) Stop() {
-	fmt.Println("[STOP] Zinx server , name " , s.Name)
+	fmt.Println("[STOP] Zinx server , name ", s.Name)
 	//将其他需要清理的连接信息或者其他信息 也要一并停止或者清理
 	s.ConnMgr.ClearConn()
 }
@@ -101,12 +101,12 @@ func (s *Server) GetConnMgr() inet.IConnManager {
 }
 
 //设置该Server的连接创建时Hook函数
-func (s *Server) SetOnConnStart(hookFunc func (inet.IConnection)) {
+func (s *Server) SetOnConnStart(hookFunc func(inet.IConnection)) {
 	s.OnConnStart = hookFunc
 }
 
 //设置该Server的连接断开时的Hook函数
-func (s *Server) SetOnConnStop(hookFunc func (inet.IConnection)) {
+func (s *Server) SetOnConnStop(hookFunc func(inet.IConnection)) {
 	s.OnConnStop = hookFunc
 }
 
@@ -126,22 +126,24 @@ func (s *Server) CallOnConnStop(conn inet.IConnection) {
 	}
 }
 
+func (s *Server) Packet() inet.Packet {
+	return s.packet
+}
 
 /*
   创建一个服务器句柄
 */
-func NewServer () inet.IServer {
+func NewServer() inet.IServer {
 	//先初始化全局配置文件
 	utils.GlobalObject.Reload()
-	s:= &Server {
-		Name :utils.GlobalObject.Name,		//从全局参数获取
-		IPVersion:"tcp4",
-		IP:utils.GlobalObject.Host,			//从全局参数获取
-		Port:utils.GlobalObject.TcpPort,	//从全局参数获取
-		msgHandler: NewMsgHandle(), 		//msgHandler 初始化
-		ConnMgr:NewConnManager(),  			//创建ConnManager
+	s := &Server{
+		Name:       utils.GlobalObject.Name, //从全局参数获取
+		IPVersion:  "tcp4",
+		IP:         utils.GlobalObject.Host,    //从全局参数获取
+		Port:       utils.GlobalObject.TcpPort, //从全局参数获取
+		msgHandler: NewMsgHandle(),             //msgHandler 初始化
+		ConnMgr:    NewConnManager(),           //创建ConnManager
 	}
 
 	return s
 }
-
