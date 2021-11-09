@@ -29,7 +29,7 @@ type Connection struct {
 }
 
 //创建连接的方法
-func DealConnection(server inet.IServer, conn *net.TCPConn, connID uint32, msgHandler inet.IMsgHandle) *Connection {
+func NewConnection(server inet.IServer, conn *net.TCPConn, connID uint32, msgHandler inet.IMsgHandle) *Connection {
 	c := &Connection{
 		TcpServer:   server,
 		Conn:        conn,
@@ -68,8 +68,8 @@ func (c *Connection) StartWriter() {
 					return
 				}
 			} else {
-				break
 				fmt.Println("msgBuffChan is Closed")
+				break
 			}
 		case <-c.ctx.Done():
 			return
@@ -94,14 +94,14 @@ func (c *Connection) StartReader() {
 			headData := make([]byte, dp.GetHeadLen())
 			if _, err := io.ReadFull(c.GetTCPConnection(), headData); err != nil {
 				fmt.Println("read msg head error ", err)
-				break
+				return
 			}
 
 			//拆包,得到msgId 和 dataLen 放在msg中
 			msg, err := dp.Unpack(headData)
 			if err != nil {
 				fmt.Println("unpack error ", err)
-				break
+				return
 			}
 
 			//根据 dataLen 读取 data，放在msg.Data中
@@ -110,7 +110,7 @@ func (c *Connection) StartReader() {
 				data = make([]byte, msg.GetDataLen())
 				if _, err := io.ReadFull(c.GetTCPConnection(), data); err != nil {
 					fmt.Println("read msg data error ", err)
-					continue
+					return
 				}
 			}
 			msg.SetData(data)

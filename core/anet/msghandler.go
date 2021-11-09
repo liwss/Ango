@@ -8,18 +8,18 @@ import (
 	"ango/interface/inet"
 )
 
-type MsgHandle struct{
-	Apis map[uint32] 	inet.IRouter 			//存放每个MsgId 所对应的处理方法的map属性
-	WorkerPoolSize 		uint32                  //业务工作Worker池的数量
-	TaskQueue      		[]chan inet.IRequest  	//Worker负责取任务的消息队列
+type MsgHandle struct {
+	Apis           map[uint32]inet.IRouter //存放每个MsgId 所对应的处理方法的map属性
+	WorkerPoolSize uint32                  //业务工作Worker池的数量
+	TaskQueue      []chan inet.IRequest    //Worker负责取任务的消息队列
 }
 
 func NewMsgHandle() *MsgHandle {
 	return &MsgHandle{
-		Apis: make(map[uint32]inet.IRouter),
-		WorkerPoolSize:utils.GlobalObject.WorkerPoolSize,
+		Apis:           make(map[uint32]inet.IRouter),
+		WorkerPoolSize: utils.GlobalObject.WorkerPoolSize,
 		//一个worker对应一个queue
-		TaskQueue:make([]chan inet.IRequest, utils.GlobalObject.WorkerPoolSize),
+		TaskQueue: make([]chan inet.IRequest, utils.GlobalObject.WorkerPoolSize),
 	}
 }
 
@@ -64,7 +64,7 @@ func (mh *MsgHandle) StartOneWorker(workerID int, taskQueue chan inet.IRequest) 
 //启动worker工作池
 func (mh *MsgHandle) StartWorkerPool() {
 	//遍历需要启动worker的数量，依此启动
-	for i:= 0; i < int(mh.WorkerPoolSize); i++ {
+	for i := 0; i < int(mh.WorkerPoolSize); i++ {
 		//一个worker被启动
 		//给当前worker对应的任务队列开辟空间
 		mh.TaskQueue[i] = make(chan inet.IRequest, utils.GlobalObject.MaxWorkerTaskLen)
@@ -73,14 +73,13 @@ func (mh *MsgHandle) StartWorkerPool() {
 	}
 }
 
-
 //将消息交给TaskQueue,由worker进行处理
-func (mh *MsgHandle)SendMsgToTaskQueue(request inet.IRequest) {
+func (mh *MsgHandle) SendMsgToTaskQueue(request inet.IRequest) {
 	//根据ConnID来分配当前的连接应该由哪个worker负责处理
 	//轮询的平均分配法则
 	//得到需要处理此条连接的workerID
 	workerID := request.GetConnection().GetConnID() % mh.WorkerPoolSize
-	fmt.Println("Add ConnID=", request.GetConnection().GetConnID()," request msgID=", request.GetMsgID(), "to workerID=", workerID)
+	fmt.Println("Add ConnID=", request.GetConnection().GetConnID(), " request msgID=", request.GetMsgID(), "to workerID=", workerID)
 	//将请求消息发送给任务队列
 	mh.TaskQueue[workerID] <- request
 }

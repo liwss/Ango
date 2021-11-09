@@ -10,14 +10,14 @@ import (
 
 //连接管理模块
 type ConnManager struct {
-	connections map[uint32]inet.IConnection 	//管理的连接信息
-	connLock    sync.RWMutex                  	//读写连接的读写锁
+	connections map[uint32]inet.IConnection //管理的连接信息
+	connLock    sync.RWMutex                //读写连接的读写锁
 }
 
 //创建一个链接管理
 func NewConnManager() *ConnManager {
 	return &ConnManager{
-		connections:make(map[uint32] inet.IConnection),
+		connections: make(map[uint32]inet.IConnection),
 	}
 }
 
@@ -42,7 +42,7 @@ func (connMgr *ConnManager) Remove(conn inet.IConnection) {
 	//删除连接信息
 	delete(connMgr.connections, conn.GetConnID())
 
-	fmt.Println("connection Remove ConnID=",conn.GetConnID(), " successfully: conn num = ", connMgr.Len())
+	fmt.Println("connection Remove ConnID=", conn.GetConnID(), " successfully: conn num = ", connMgr.Len())
 }
 
 //利用ConnID获取链接
@@ -74,9 +74,8 @@ func (connMgr *ConnManager) ClearConn() {
 		//停止
 		conn.Stop()
 		//删除
-		delete(connMgr.connections,connID)
+		delete(connMgr.connections, connID)
 	}
-
 
 	fmt.Println("Clear All Connections successfully: conn num = ", connMgr.Len())
 }

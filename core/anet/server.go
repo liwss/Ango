@@ -20,6 +20,25 @@ type Server struct {
 	packet      inet.Packet
 }
 
+/*
+  创建一个服务器句柄
+*/
+func NewServer() inet.IServer {
+	//先初始化全局配置文件
+	utils.GlobalObject.Reload()
+	s := &Server{
+		Name:       utils.GlobalObject.Name, //从全局参数获取
+		IPVersion:  "tcp4",
+		IP:         utils.GlobalObject.Host,    //从全局参数获取
+		Port:       utils.GlobalObject.TcpPort, //从全局参数获取
+		msgHandler: NewMsgHandle(),             //msgHandler 初始化
+		ConnMgr:    NewConnManager(),           //创建ConnManager
+		packet:     NewDataPack(),              //封包拆包实例初始化
+	}
+
+	return s
+}
+
 //开启网络服务
 func (s *Server) Start() {
 	fmt.Printf("[START] Ango Server listenner at IP: %s, Port %d, is starting\n", s.IP, s.Port)
@@ -66,7 +85,7 @@ func (s *Server) Start() {
 			}
 
 			//3.3 处理该新连接请求的业务方法，此时应该有handler和conn是绑定的
-			dealConn := DealConnection(s, conn, cid, s.msgHandler)
+			dealConn := NewConnection(s, conn, cid, s.msgHandler)
 			cid++
 
 			//3.4 启动当前链接的处理业务
@@ -128,22 +147,4 @@ func (s *Server) CallOnConnStop(conn inet.IConnection) {
 
 func (s *Server) Packet() inet.Packet {
 	return s.packet
-}
-
-/*
-  创建一个服务器句柄
-*/
-func NewServer() inet.IServer {
-	//先初始化全局配置文件
-	utils.GlobalObject.Reload()
-	s := &Server{
-		Name:       utils.GlobalObject.Name, //从全局参数获取
-		IPVersion:  "tcp4",
-		IP:         utils.GlobalObject.Host,    //从全局参数获取
-		Port:       utils.GlobalObject.TcpPort, //从全局参数获取
-		msgHandler: NewMsgHandle(),             //msgHandler 初始化
-		ConnMgr:    NewConnManager(),           //创建ConnManager
-	}
-
-	return s
 }
