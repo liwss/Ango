@@ -1,3 +1,8 @@
+/*
+* @Author: liws
+* @Date:   2021/11/20 14:53
+* @Desc:
+**/
 package anet
 
 import (
@@ -33,7 +38,7 @@ func (msg *EaiMessage) GetMsgFlag() string {
 	return string(msg.msgFlag[:])
 }
 
-//获取消息起始标志
+//设置消息起始标志
 func (msg *EaiMessage) SetMsgFlag(msgFlag string) {
 	temp := []byte(msgFlag)
 	length := len(temp)
@@ -228,12 +233,12 @@ func (msg *EaiMessage) SetStreamId(streamId int) {
 	}
 }
 
-//获取通讯描述符序号
+//获取优先级
 func (msg *EaiMessage) GetPriority() (int, error) {
 	return strconv.Atoi(string(msg.priority[:]))
 }
 
-//设置通讯描述符序号
+//设置优先级
 func (msg *EaiMessage) SetPriority(priority int) {
 	temp := []byte(strconv.Itoa(priority))
 	length := len(temp)
