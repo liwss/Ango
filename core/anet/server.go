@@ -95,7 +95,7 @@ func (s *Server) Start() {
 }
 
 func (s *Server) Stop() {
-	fmt.Println("[STOP] Zinx server , name ", s.Name)
+	fmt.Println("[STOP] Ango server , name ", s.Name)
 	//将其他需要清理的连接信息或者其他信息 也要一并停止或者清理
 	s.ConnMgr.ClearConn()
 }

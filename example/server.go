@@ -57,7 +57,7 @@ func DoConnectionBegin(conn inet.IConnection) {
 //连接断开的时候执行
 func DoConnectionLost(conn inet.IConnection) {
 	//在连接销毁之前，查询conn的Name，Home属性
-	if name, err:= conn.GetProperty("Name"); err == nil {
+	if name, err := conn.GetProperty("Name"); err == nil {
 		fmt.Println("Conn Property Name = ", name)
 	}
 
@@ -65,7 +65,7 @@ func DoConnectionLost(conn inet.IConnection) {
 		fmt.Println("Conn Property Home = ", home)
 	}
 
-	fmt.Println("DoConneciotnLost is Called ... ")
+	fmt.Println("DoConnectionLost is Called ... ")
 }
 
 func main() {

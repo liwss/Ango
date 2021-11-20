@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"fmt"
 )
 
 //封包拆包类实例，暂时不需要成员
@@ -25,7 +24,6 @@ func (dp *DataPack) GetHeadLen() uint32 {
 
 //封包方法(压缩数据)
 func (dp *DataPack) Pack(msg inet.IMessage) ([]byte, error) {
-	fmt.Println("------------------------")
 	//创建一个存放bytes字节的缓冲
 	dataBuff := bytes.NewBuffer([]byte{})
 
@@ -67,7 +65,7 @@ func (dp *DataPack) Unpack(binaryData []byte) (inet.IMessage, error) {
 
 	//判断dataLen的长度是否超出我们允许的最大包长度
 	if utils.GlobalObject.MaxPacketSize > 0 && msg.DataLen > utils.GlobalObject.MaxPacketSize {
-		return nil, errors.New("Too large msg data recieved")
+		return nil, errors.New("too large msg data received")
 	}
 
 	//这里只需要把head的数据拆包出来就可以了，然后再通过head的长度，再从conn读取一次数据

@@ -1,6 +1,5 @@
 package anet
 
-
 type Message struct {
 	Id      uint32 //消息的ID
 	DataLen uint32 //消息的长度
@@ -10,9 +9,9 @@ type Message struct {
 //创建一个Message消息包
 func NewMsgPackage(id uint32, data []byte) *Message {
 	return &Message{
-		Id:     id,
+		Id:      id,
 		DataLen: uint32(len(data)),
-		Data:   data,
+		Data:    data,
 	}
 }
 
@@ -36,12 +35,12 @@ func (msg *Message) SetDataLen(len uint32) {
 	msg.DataLen = len
 }
 
-//设计消息ID
+//设置消息ID
 func (msg *Message) SetMsgId(msgId uint32) {
 	msg.Id = msgId
 }
 
-//设计消息内容
+//设置消息内容
 func (msg *Message) SetData(data []byte) {
 	msg.Data = data
 }
